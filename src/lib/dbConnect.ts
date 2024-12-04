@@ -7,21 +7,25 @@ type ConnectionObject = {
 const connection: ConnectionObject = {};
 
 async function dbConnect(): Promise<void> {
-  // Checking if db is already connected
+  // Check if we have a connection to the database or if it's currently connecting
   if (connection.isConnected) {
-    console.log("Database is already connected");
+    console.log("Already connected to the database");
     return;
   }
-  //   If not already connected
+
   try {
-    const db = await mongoose.connect(process.env.MONGODB_URI || "", {});
-    console.log(db);
-    console.log(db.connections);
+    // Attempt to connect to the database
+    const db = await mongoose.connect(
+      process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/mysterymessage"
+    );
+
     connection.isConnected = db.connections[0].readyState;
 
-    console.log("DB connected successfully");
+    console.log("Database connected successfully");
   } catch (error) {
-    console.log("DB connection failed");
+    console.error("Database connection failed:", error);
+
+    // Graceful exit in case of a connection error
     process.exit(1);
   }
 }
